@@ -10,12 +10,12 @@ public class MainPage {
     private final WebDriver driver;
 
     // Локаторы для кнопок "Заказать"
-    private final By orderButtonTop = By.xpath("//button[contains(@class, 'Button_Button__ra12g') and not(contains(@class, 'Button_Middle_1CSJM')) and text()='Заказать']");
-    private final By orderButtonBottom = By.xpath("//button[contains(@class, 'Button_Middle_1CSJM') and text()='Заказать']");
+    private final By orderButtonTop = By.xpath("(//button[text()='Заказать'])[1]");
+    private final By orderButtonBottom = By.xpath("(//button[text()='Заказать'])[2]");
 
     // Локаторы для вопросов о важном
-    private final By questionHeading = By.className("accordion__heading");
-    private final By questionPanel = By.className("accordion__panel");
+    private final By questionHeading = By.cssSelector("[data-accordion-component='AccordionItemHeading']");
+    private final By questionPanel = By.cssSelector("[data-accordion-component='AccordionItemPanel']");
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
