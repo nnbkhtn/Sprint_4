@@ -5,13 +5,16 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import java.util.List;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class MainPage {
     private final WebDriver driver;
 
     // Локаторы для кнопок "Заказать"
-    private final By orderButtonTop = By.xpath("(//button[text()='Заказать'])[1]");
-    private final By orderButtonBottom = By.xpath("(//button[text()='Заказать'])[2]");
+    private final By orderButtonTop = By.xpath("//div[contains(@class, 'Header_Nav')]//button[contains(text(), 'Заказать')]");
+    private final By orderButtonBottom = By.xpath("//div[contains(@class, 'FinishButton')]//button[contains(text(), 'Заказать')]");
 
     // Локаторы для вопросов о важном
     private final By questionHeading = By.cssSelector("[data-accordion-component='AccordionItemHeading']");
@@ -23,13 +26,15 @@ public class MainPage {
 
     // --- Методы для заказа ---
     public void clickOrderButtonTop() {
-        WebElement button = driver.findElement(orderButtonTop);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(orderButtonTop));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
     }
 
     public void clickOrderButtonBottom() {
-        WebElement button = driver.findElement(orderButtonBottom);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(orderButtonBottom));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
     }

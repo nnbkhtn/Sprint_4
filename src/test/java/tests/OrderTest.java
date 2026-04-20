@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.MainPage;
 import pages.OrderPageStepOne;
 import pages.OrderPageStepTwo;
+import pages.SuccessModal;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -19,7 +20,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class OrderTest extends BaseTest {
 
+    // Константа для URL сайта
     private static final String BASE_URL = "https://qa-scooter.praktikum-services.ru/";
+
+    // Новый параметр: какую кнопку нажимать (true - верхняя, false - нижняя)
+    private final boolean clickTopButton;
 
     private final String name;
     private final String surname;
@@ -31,8 +36,9 @@ public class OrderTest extends BaseTest {
     private final String period;
     private final String comment;
 
-    public OrderTest(String name, String surname, String address, String metro,
+    public OrderTest(boolean clickTopButton, String name, String surname, String address, String metro,
                      String phone, String color, String date, String period, String comment) {
+        this.clickTopButton = clickTopButton;
         this.name = name;
         this.surname = surname;
         this.address = address;
@@ -47,30 +53,35 @@ public class OrderTest extends BaseTest {
     @Parameterized.Parameters
     public static Collection<Object[]> getData() {
         return Arrays.asList(new Object[][]{
-                // Набор 1
-                {"Федор", "Серов", "Москва, ул. Ленина 1", "Третьяковская",
+                // Верхняя кнопка + Набор данных 1
+                {true, "Федор", "Серов", "Москва, ул. Ленина 1", "Третьяковская",
                         "+79991234567", "black", "20.05.2026", "1", "Срочный заказ"},
 
-                // Набор 2 (Дата в будущем)
-                {"Василий", "Скворцов", "Санкт-Петербург, Невский 10", "Невский проспект",
+                // Нижняя кнопка + Набор данных 1
+                {false, "Федор", "Серов", "Москва, ул. Ленина 1", "Третьяковская",
+                        "+79991234567", "black", "20.05.2026", "1", "Срочный заказ"},
+
+                // Верхняя кнопка + Набор данных 2
+                {true, "Василий", "Скворцов", "Санкт-Петербург, Невский 10", "Невский проспект",
+                        "+79997654321", "grey", "25.05.2026", "3", "Позвоните за полчаса"},
+
+                // Нижняя кнопка + Набор данных 2
+                {false, "Василий", "Скворцов", "Санкт-Петербург, Невский 10", "Невский проспект",
                         "+79997654321", "grey", "25.05.2026", "3", "Позвоните за полчаса"}
         });
     }
 
     @Test
-    public void testOrderFromTopButton() {
+    public void testOrder() {
         driver.get(BASE_URL);
         MainPage mainPage = new MainPage(driver);
-        mainPage.clickOrderButtonTop();
 
-        fillOrderAndCheck();
-    }
-
-    @Test
-    public void testOrderFromBottomButton() {
-        driver.get(BASE_URL);
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickOrderButtonBottom();
+        // Выбираем кнопку в зависимости от параметра
+        if (clickTopButton) {
+            mainPage.clickOrderButtonTop();
+        } else {
+            mainPage.clickOrderButtonBottom();
+        }
 
         fillOrderAndCheck();
     }
@@ -87,11 +98,10 @@ public class OrderTest extends BaseTest {
         stepTwo.fillStepTwo(date, period, comment);
         stepTwo.submitOrder();
 
-        // Проверка: ждать текст "Заказ оформлен"
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//*[contains(text(), 'Заказ оформлен')]")
-        ));
+        // Проверка успешного заказа
+        SuccessModal successModal = new SuccessModal(driver);
+        successModal.waitForSuccessMessage();
+        assertTrue(successModal.isSuccessMessageVisible());
 
         assertTrue(driver.findElement(By.xpath("//*[contains(text(), 'Заказ оформлен')]")).isDisplayed());
     }
