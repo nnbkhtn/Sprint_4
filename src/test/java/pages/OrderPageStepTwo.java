@@ -2,9 +2,14 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class OrderPageStepTwo {
     private final WebDriver driver;
+    private final WebDriverWait wait;
 
     private final By dateInput = By.xpath(".//input[@placeholder='* Когда привезти самокат']");
     private final By periodDropdown = By.xpath(".//div[text()='* Срок аренды']");
@@ -13,13 +18,13 @@ public class OrderPageStepTwo {
     private final By colorGrey = By.xpath("//label[@for='grey']");
     private final By commentInput = By.xpath(".//input[@placeholder='Комментарий для курьера']");
 
-    private final By orderButton = By.xpath("//button[contains(@class, 'Button_Middle_1CSJM') and text()='Заказать']");
-
+    private final By orderButton = By.xpath("//div[contains(@class, 'Order_Buttons')]//button[text()='Заказать']");
     private final By confirmButton = By.xpath(".//button[text()='Да']");
     private final By cookieButton = By.xpath("//button[text()='да все привыкли']");
 
     public OrderPageStepTwo(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void selectColor(String color) {
@@ -41,15 +46,14 @@ public class OrderPageStepTwo {
     }
 
     public void submitOrder() {
-        // Закрыть куки
-        if (driver.findElements(cookieButton).size() > 0) {
-            driver.findElement(cookieButton).click();
+        if (!driver.findElements(cookieButton).isEmpty()) {
+            WebElement cookie = driver.findElement(cookieButton);
+            if (cookie.isDisplayed()) {
+                cookie.click();
+            }
         }
 
-        // Найти кнопку "Заказать" и кликнуть
-        driver.findElement(orderButton).click();
-
-        // Кликнуть "Да" в модальном окне
-        driver.findElement(confirmButton).click();
+        wait.until(ExpectedConditions.elementToBeClickable(orderButton)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(confirmButton)).click();
     }
 }
