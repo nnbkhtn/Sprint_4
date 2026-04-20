@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class OrderTest extends BaseTest {
 
+    private static final String BASE_URL = "https://qa-scooter.praktikum-services.ru/";
+
     private final String name;
     private final String surname;
     private final String address;
@@ -57,7 +59,7 @@ public class OrderTest extends BaseTest {
 
     @Test
     public void testOrderFromTopButton() {
-        driver.get("https://qa-scooter.praktikum-services.ru/");
+        driver.get(BASE_URL);
         MainPage mainPage = new MainPage(driver);
         mainPage.clickOrderButtonTop();
 
@@ -66,7 +68,7 @@ public class OrderTest extends BaseTest {
 
     @Test
     public void testOrderFromBottomButton() {
-        driver.get("https://qa-scooter.praktikum-services.ru/");
+        driver.get(BASE_URL);
         MainPage mainPage = new MainPage(driver);
         mainPage.clickOrderButtonBottom();
 
